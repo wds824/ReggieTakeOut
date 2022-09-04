@@ -1,10 +1,12 @@
 package com.wds.reggie.controller;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.wds.reggie.common.BaseContext;
 import com.wds.reggie.common.R;
 import com.wds.reggie.entity.Orders;
+import com.wds.reggie.exception.CustomException;
 import com.wds.reggie.service.AddressBookService;
 import com.wds.reggie.service.OrdersService;
 import com.wds.reggie.service.UserService;
@@ -84,7 +86,13 @@ public class OrdersController {
 
     @PutMapping
     public R<String> update(@RequestBody Orders orders){
-
-        return null;
+        if (orders.getId() == null || orders.getStatus() == null){
+            throw new CustomException("你给我传的啥??");
+        }
+        LambdaUpdateWrapper<Orders> updateWrapper = new LambdaUpdateWrapper<>();
+        updateWrapper.set(Orders::getStatus, orders.getStatus());
+        updateWrapper.eq(Orders::getId, orders.getId());
+        ordersService.update();
+        return R.success("修改成功！");
     }
 }
