@@ -92,7 +92,7 @@ public class OrdersController {
         LambdaUpdateWrapper<Orders> updateWrapper = new LambdaUpdateWrapper<>();
         updateWrapper.set(Orders::getStatus, orders.getStatus());
         updateWrapper.eq(Orders::getId, orders.getId());
-        ordersService.update();
+        ordersService.update(updateWrapper);
         return R.success("修改成功！");
     }
 }
