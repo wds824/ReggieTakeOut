@@ -4,14 +4,17 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.wds.reggie.common.BaseContext;
 import com.wds.reggie.common.R;
-import com.wds.reggie.dto.OrdersDto;
 import com.wds.reggie.entity.Orders;
 import com.wds.reggie.service.AddressBookService;
 import com.wds.reggie.service.OrdersService;
 import com.wds.reggie.service.UserService;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 /**
  * @author WDs , wds8.24@outlook.com
@@ -37,7 +40,7 @@ public class OrdersController {
 
 
     /**
-     *  历史订单
+     * 历史订单
      */
     @GetMapping("userPage")
     public R<Page<Orders>> userPage(int page, int pageSize) {
@@ -47,5 +50,41 @@ public class OrdersController {
         ordersService.page(ordersPage, queryWrapper);
 
         return R.success(ordersPage);
+    }
+
+    /**
+     * @param page      第几页
+     * @param pageSize  每页多少条
+     * @param number    订单号
+     * @param beginTime 创建时间 开始
+     * @param endTime   结束
+     */
+    @GetMapping("page")
+    public R<Page<Orders>> ordersPage(int page, int pageSize,
+                                      Long number, String beginTime, String endTime) {
+
+
+        Page<Orders> page1 = new Page<>(page, pageSize);
+        // condition
+        LambdaQueryWrapper<Orders> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(number != null, Orders::getNumber, number);
+        //has time range
+        if (StringUtils.isNotEmpty(beginTime) && StringUtils.isNotEmpty(endTime)) {
+            LocalDateTime localBeginTime = LocalDateTime.parse(beginTime, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+            LocalDateTime localEndTime = LocalDateTime.parse(endTime, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+
+            queryWrapper.gt(Orders::getOrderTime, localBeginTime);
+            queryWrapper.lt(Orders::getOrderTime, localEndTime);
+
+        }
+
+        Page<Orders> ordersPage = ordersService.page(page1, queryWrapper);
+        return R.success(ordersPage);
+    }
+
+    @PutMapping
+    public R<String> update(@RequestBody Orders orders){
+
+        return null;
     }
 }
