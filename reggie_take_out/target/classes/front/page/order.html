@@ -29,7 +29,7 @@
                     v-model="loading"
                     :finished="finished"
                     finished-text="没有更多了"
-                    @load="getList"
+
                     >
                     <van-cell v-for="(order,index) in orderList" :key="index" class="item">
                         <div class="timeStatus">
@@ -108,6 +108,7 @@
                         this.loading = false;
                         return
                     }
+                    this.finished = true
                     const res = await orderPagingApi(this.paging)
                     if(res.code === 1){
                         this.orderList.push(...res.data.records)
