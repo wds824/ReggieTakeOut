@@ -9,7 +9,7 @@ package com.wds.reggie.common;
  *
  */
 public class BaseContext {
-    private static ThreadLocal<Long> local = new ThreadLocal<>();
+    private static final ThreadLocal<Long> local = new ThreadLocal<>();
 
     public static void setCurrentId(Long id){
         local.set(id);
