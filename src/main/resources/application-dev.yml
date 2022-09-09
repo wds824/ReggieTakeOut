@@ -11,8 +11,8 @@ mybatis-plus:
   global-config:
     db-config:
       id-type: assign_id
-  configuration:
-    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+#  configuration:
+#    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
 
 reggie:
   up-path: D:\reggie\img\

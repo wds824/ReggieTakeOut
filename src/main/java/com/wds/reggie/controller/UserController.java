@@ -29,7 +29,6 @@ public class UserController {
 
     @PostMapping("/login")
     public R<String> login(@RequestBody User user, HttpServletRequest request) {
-        log.info("User login :{}", user.getPhone());
         LambdaQueryWrapper<User> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.eq(User::getPhone, user.getPhone());
         User dbUser = userService.getOne(queryWrapper);
@@ -46,7 +45,8 @@ public class UserController {
             dbUser = newUser;
         }
         request.getSession().setAttribute("userId", dbUser.getId());
-        log.info("user login id: {}", dbUser.getId());
+
+        log.info("User login phone:{}", user.getPhone());
 
         return R.success("登录成功!");
     }
