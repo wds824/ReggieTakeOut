@@ -1,18 +1,18 @@
 package com.wds.reggie.controller;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.wds.reggie.common.BaseContext;
 import com.wds.reggie.common.R;
 import com.wds.reggie.entity.User;
 import com.wds.reggie.service.UserService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
-import java.util.List;
 
 /**
  * @author WDs , wds8.24@outlook.com
@@ -46,11 +46,13 @@ public class UserController {
             dbUser = newUser;
         }
         request.getSession().setAttribute("userId", dbUser.getId());
+        log.info("user login id: {}", dbUser.getId());
+
         return R.success("登录成功!");
     }
 
     @PostMapping("/loginout")
-    public R<String> loginOut(HttpSession session){
+    public R<String> loginOut(HttpSession session) {
         session.removeAttribute("userId");
         return R.success("User Login Out");
     }

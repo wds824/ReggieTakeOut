@@ -2,6 +2,7 @@ package com.wds.reggie.controller;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.wds.reggie.common.BaseContext;
 import com.wds.reggie.common.R;
 import com.wds.reggie.entity.Employee;
 import com.wds.reggie.service.EmployeeService;
@@ -53,6 +54,7 @@ public class EmployeeController {
         }
 
         request.getSession().setAttribute("employeeId", emp.getId());
+        log.info("employee login id: {}", emp.getId());
         emp.setPassword("");
         return R.success(emp);
     }

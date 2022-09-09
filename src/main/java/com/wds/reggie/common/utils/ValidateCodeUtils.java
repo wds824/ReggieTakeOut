@@ -1,4 +1,4 @@
-package com.wds.reggie.utils;
+package com.wds.reggie.common.utils;
 
 import java.util.Random;
 
