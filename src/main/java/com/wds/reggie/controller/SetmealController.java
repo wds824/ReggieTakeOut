@@ -6,7 +6,6 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.wds.reggie.common.R;
 import com.wds.reggie.dto.SetmealDto;
 import com.wds.reggie.entity.Category;
-import com.wds.reggie.entity.Dish;
 import com.wds.reggie.entity.Setmeal;
 import com.wds.reggie.entity.SetmealDish;
 import com.wds.reggie.service.CategoryService;
@@ -14,9 +13,10 @@ import com.wds.reggie.service.SetmealDishService;
 import com.wds.reggie.service.SetmealService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.ibatis.annotations.Update;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
@@ -26,8 +26,9 @@ import java.util.stream.Collectors;
 
 /**
  * @author WDs , wds8.24@outlook.com
- * @version 1.0
+ * @version 1.1
  * @since 2022-08-30 18:24
+ * 1.1  支持缓存
  */
 @Slf4j
 @RestController
@@ -53,8 +54,8 @@ public class SetmealController {
      * @param page     几页
      * @param pageSize 每页
      * @param name     搜索关键字
-     * @return page{dto}
      */
+    @Cacheable(value = "setmealCache", key = "#page + '_' + #pageSize", condition = "#name == null")
     @GetMapping("/page")
     public R<Page<SetmealDto>> page(int page, int pageSize, String name) {
         Page<Setmeal> pageInfo = new Page<>(page, pageSize);
@@ -91,6 +92,7 @@ public class SetmealController {
      *
      * @return disDto
      */
+    @CacheEvict(value = "setmealCache", allEntries = true)
     @GetMapping("/{id}")
     public R<SetmealDto> reShow(@PathVariable Long id) {
         Setmeal setmeal = setmealService.getById(id);
@@ -110,6 +112,7 @@ public class SetmealController {
      * 清除setMealDish的旧数据
      * 写入新的serMealDIsh数据
      */
+    @CacheEvict(value = "setmealCache", allEntries = true)
     @PutMapping
     public R<String> update(@RequestBody SetmealDto dto) {
         setmealService.updateById(dto);
@@ -127,6 +130,7 @@ public class SetmealController {
     /**
      * 停售启售
      */
+    @CacheEvict(value = "setmealCache", allEntries = true)
     @PostMapping("/status/{type}")
     public R<String> status(@PathVariable int type, Long[] ids) {
         LambdaUpdateWrapper<Setmeal> updateWrapper = new LambdaUpdateWrapper<>();
@@ -139,13 +143,13 @@ public class SetmealController {
     /**
      * 删除套餐
      */
+    @CacheEvict(value = "setmealCache", allEntries = true)
     @Transactional
     @DeleteMapping
-    public R<String> delete(Long[] ids){
+    public R<String> delete(Long[] ids) {
 
         List<Long> list = Arrays.asList(ids);
         setmealService.removeByIds(list);
-
 
 
         LambdaQueryWrapper<SetmealDish> queryWrapper = new LambdaQueryWrapper<>();
@@ -158,11 +162,12 @@ public class SetmealController {
     /**
      * 查询套餐
      */
+    @Cacheable(value = "setmealCache", key = "#categoryId + '_' + #status")
     @GetMapping("/list")
-    public R<List<Setmeal>> listDish(Long categoryId, Integer status){
+    public R<List<Setmeal>> listDish(Long categoryId, Integer status) {
         LambdaQueryWrapper<Setmeal> queryWrapper1 = new LambdaQueryWrapper<>();
         queryWrapper1.eq(Setmeal::getCategoryId, categoryId);
-        queryWrapper1.eq(Setmeal::getStatus,status);
+        queryWrapper1.eq(Setmeal::getStatus, status);
         List<Setmeal> list = setmealService.list(queryWrapper1);
         return R.success(list);
     }

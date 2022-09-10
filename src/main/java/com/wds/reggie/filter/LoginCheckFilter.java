@@ -39,14 +39,25 @@ public class LoginCheckFilter implements Filter {
 //        allow uri
         String[] uris = new String[]{
 //                登录登出
-                "/employee/login",
-                "/employee/logout",
                 "/",
+                "/employee/login",
 //                静态资源
                 "/front/**",
                 "/backend/**",
                 "/user/login"
         };
+
+
+        // TODO: 2022/9/9 前后台用户鉴权
+        String[] front_uris = new String[]{
+                "/"
+        };
+
+        String[] backend_uris = new String[]{
+                ""
+        };
+
+
 
         boolean matcher = check(uris, ruri);
 
@@ -65,7 +76,6 @@ public class LoginCheckFilter implements Filter {
         if ((request.getSession().getAttribute("userId")) != null) {
             /*存储当前登录用户的id*/
             BaseContext.setCurrentId((Long) request.getSession().getAttribute("userId"));
-
             filterChain.doFilter(servletRequest, servletResponse);
             return;
 
