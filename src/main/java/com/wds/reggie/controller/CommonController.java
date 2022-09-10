@@ -3,6 +3,7 @@ package com.wds.reggie.controller;
 import com.wds.reggie.common.R;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -56,6 +57,7 @@ public class CommonController {
     /**
      * 文件下载
      */
+    @Cacheable(value = "downloadCache",key = "'file_name_' + #name" ,condition = "#name == null")
     @GetMapping("/download")
     public void download(String name, HttpServletResponse response) throws IOException {
         FileInputStream inputStream = new FileInputStream(basePath + name);
