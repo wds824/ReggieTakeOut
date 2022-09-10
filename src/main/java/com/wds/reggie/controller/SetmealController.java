@@ -56,7 +56,8 @@ public class SetmealController {
      * @param pageSize 每页
      * @param name     搜索关键字
      */
-    @Cacheable(value = "setmealCache", key = "#page + '_' + #pageSize", condition = "#name == null")
+//    @Cacheable(value = "setmealCache", key = "'page_' + #page + '_' + #pageSize", condition = "#name == null")
+    @Cacheable(value = "setmealCache", key = "'page_' + #page + '_' + #pageSize")
     @GetMapping("/page")
     public R<Page<SetmealDto>> page(int page, int pageSize, String name) {
         Page<Setmeal> pageInfo = new Page<>(page, pageSize);
@@ -163,7 +164,7 @@ public class SetmealController {
     /**
      * 查询套餐
      */
-    @Cacheable(value = "setmealCache", key = "#categoryId + '_' + #status")
+    @Cacheable(value = "setmealCache", key = "'list_'  +  #categoryId + '_' + #status")
     @GetMapping("/list")
     public R<List<Setmeal>> listDish(Long categoryId, Integer status) {
         LambdaQueryWrapper<Setmeal> queryWrapper1 = new LambdaQueryWrapper<>();

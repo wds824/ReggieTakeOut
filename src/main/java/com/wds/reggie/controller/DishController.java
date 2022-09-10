@@ -17,6 +17,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.web.bind.annotation.*;
 
@@ -40,8 +42,8 @@ public class DishController {
     @Autowired
     private SetmealDishService setmealDishService;
 
-    @Autowired
-    private RedisTemplate<Object, Object> redisTemplate;
+//    @Autowired
+//    private RedisTemplate<Object, Object> redisTemplate;
 
     /**
      * 分页查询 缓存支持
@@ -51,19 +53,20 @@ public class DishController {
      * @param pageSize 每页几条
      * @param name     搜索关键字
      */
+    @Cacheable(value = "dishCache",key = "'page_' + #page + '_' + #pageSize")
     @GetMapping("/page")
     public R<Page<DishDto>> pagination(Integer page, Integer pageSize, String name) {
-        String key = "dish_page_" + page + "_" + pageSize;
+//        String key = "dish_page_" + page + "_" + pageSize;
         Page<DishDto> dtoPage = null;
-
-        //搜索name字段为空 缓存
-        if (name == null) {
-            dtoPage = (Page<DishDto>) redisTemplate.opsForValue().get(key);
-            if (dtoPage != null) {
-                log.info("get redis: {}", key);
-                return R.success(dtoPage);
-            }
-        }
+//
+//        //搜索name字段为空 缓存
+//        if (name == null) {
+//            dtoPage = (Page<DishDto>) redisTemplate.opsForValue().get(key);
+//            if (dtoPage != null) {
+//                log.info("get redis: {}", key);
+//                return R.success(dtoPage);
+//            }
+//        }
 
         Page<Dish> dishPage = new Page<>(page, pageSize);
         LambdaQueryWrapper<Dish> queryWrapper = new LambdaQueryWrapper<>();
@@ -90,12 +93,12 @@ public class DishController {
 
         dtoPage.setRecords(newRecords);
 
-        // save cache
-        if (name == null) {
-            int randomTime = new Random().nextInt(10) + 60;
-            redisTemplate.opsForValue().set(key, dtoPage, randomTime, TimeUnit.MINUTES);
-            log.info("save cache:{} life:{}", key, randomTime);
-        }
+//        // save cache
+//        if (name == null) {
+//            int randomTime = new Random().nextInt(10) + 60;
+//            redisTemplate.opsForValue().set(key, dtoPage, randomTime, TimeUnit.MINUTES);
+//            log.info("save cache:{} life:{}", key, randomTime);
+//        }
 
         return R.success(dtoPage);
     }
@@ -104,9 +107,9 @@ public class DishController {
     /**
      * id查询
      * 修改回显
-     * 修改完成之后会清除缓存没必要去缓存
      */
     @GetMapping("/{id}")
+//    @CacheEvict(value = "dishCache",allEntries = true)
     public R<DishDto> reShow(@PathVariable Long id) {
         DishDto dishDto = dishService.queryWithFlavors(id);
         return R.success(dishDto);
@@ -115,14 +118,15 @@ public class DishController {
     /**
      * 添加新的菜品
      */
+    @CacheEvict(value = "dishCache",allEntries = true)
     @PostMapping
     public R<String> save(@RequestBody DishDto dto) {
-        //清除缓存
-        Set<Object> keys = redisTemplate.keys("dish_*");
-
-        if (keys != null) {
-            redisTemplate.delete(keys);
-        }
+//        //清除缓存
+//        Set<Object> keys = redisTemplate.keys("dish_*");
+//
+//        if (keys != null) {
+//            redisTemplate.delete(keys);
+//        }
 
         dishService.saveWithFlavor(dto);
         return R.success("添加成功!");
@@ -132,13 +136,14 @@ public class DishController {
     /**
      * 更新
      */
+    @CacheEvict(value = "dishCache",allEntries = true)
     @PutMapping
     public R<String> update(@RequestBody DishDto dto) {
-        //清除缓存
-        Set<Object> keys = redisTemplate.keys("dish_*");
-        if (keys != null) {
-            redisTemplate.delete(keys);
-        }
+//        //清除缓存
+//        Set<Object> keys = redisTemplate.keys("dish_*");
+//        if (keys != null) {
+//            redisTemplate.delete(keys);
+//        }
 
         dishService.updateWithFlavor(dto);
 
@@ -146,13 +151,19 @@ public class DishController {
         return R.success("修改成功!");
     }
 
+    /**
+     * 修改售卖状态
+     * @param status 目标状态
+     * @param ids 被修改的id
+     */
+    @CacheEvict(value = "dishCache",allEntries = true)
     @PostMapping("/status/{status}")
     public R<String> setStatus(@PathVariable Integer status, Long[] ids) {
-        //清除缓存
-        Set<Object> keys = redisTemplate.keys("dish_*");
-        if (keys != null) {
-            redisTemplate.delete(keys);
-        }
+//        //清除缓存
+//        Set<Object> keys = redisTemplate.keys("dish_*");
+//        if (keys != null) {
+//            redisTemplate.delete(keys);
+//        }
 
         LambdaUpdateWrapper<Dish> updateWrapper = new LambdaUpdateWrapper<>();
         updateWrapper.set(Dish::getStatus, status);
@@ -172,13 +183,14 @@ public class DishController {
      *
      * @param ids 要删除的菜品ids
      */
+    @CacheEvict(value = "dishCache",allEntries = true)
     @DeleteMapping
     public R<String> remove(Long[] ids) {
-        //清除缓存
-        Set<Object> keys = redisTemplate.keys("dish_*");
-        if (keys != null) {
-            redisTemplate.delete(keys);
-        }
+//        //清除缓存
+//        Set<Object> keys = redisTemplate.keys("dish_*");
+//        if (keys != null) {
+//            redisTemplate.delete(keys);
+//        }
 
         boolean isAllOk = true;
         List<Long> list = new ArrayList<>(Arrays.asList(ids));
@@ -212,18 +224,19 @@ public class DishController {
      * 根据条件查询菜品数据
      * 缓存支持
      */
+    @Cacheable(value = "dishCache", key = "'list_' + #dish.categoryId + '_' + #dish.status")
     @GetMapping("/list")
     public R<List<DishDto>> list(Dish dish) {
-        String key = "dish_list_" + dish.getCategoryId() + "_" + dish.getStatus();
+//        String key = "dish_list_" + dish.getCategoryId() + "_" + dish.getStatus();
         List<DishDto> dtoList = null;
-        //查询缓存
-        dtoList = (List<DishDto>) redisTemplate.opsForValue().get(key);
+//        //查询缓存
+//        dtoList = (List<DishDto>) redisTemplate.opsForValue().get(key);
 
         //缓存存在
-        if (dtoList != null) {
-            log.info("get redis: {}", key);
-            return R.success(dtoList);
-        }
+//        if (dtoList != null) {
+//            log.info("get redis: {}", key);
+//            return R.success(dtoList);
+//        }
         // 查询mysql
 
         LambdaQueryWrapper<Dish> queryWrapper = new LambdaQueryWrapper<>();
@@ -243,11 +256,11 @@ public class DishController {
             return dto;
         }).collect(Collectors.toList());
 
-
-        //缓存查询结果  失效时间60 + random() 分钟
-        int randomTime = new Random().nextInt(10) + 60;
-        redisTemplate.opsForValue().set(key, dtoList, randomTime, TimeUnit.MINUTES);
-        log.info("select sql and save cache:{} life:{}", key, randomTime);
+//
+//        //缓存查询结果  失效时间60 + random() 分钟
+//        int randomTime = new Random().nextInt(10) + 60;
+//        redisTemplate.opsForValue().set(key, dtoList, randomTime, TimeUnit.MINUTES);
+//        log.info("select sql and save cache:{} life:{}", key, randomTime);
         return R.success(dtoList);
     }
 }
