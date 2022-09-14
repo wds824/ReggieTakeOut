@@ -1,13 +1,8 @@
 package com.wds.reggie.controller;
 
-import com.wds.reggie.common.R;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * @author WDs , wds8.24@outlook.com
@@ -17,12 +12,20 @@ import java.util.List;
 @RestController
 public class BaseController {
     @RequestMapping("/")
+    public String index() {
+        return "<script> document.location.href = '" +
+                "/static/index.html" +
+                "' </script>";
+    }
+
+    @RequestMapping("/front")
     @ResponseBody
     public String frontHome() {
         return "<script> document.location.href = '" +
                 "/front/page/login.html" +
                 "' </script>";
     }
+
     @RequestMapping("/backend")
     @ResponseBody
     public String backedHome() {

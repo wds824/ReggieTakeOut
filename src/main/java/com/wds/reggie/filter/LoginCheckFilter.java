@@ -39,6 +39,7 @@ public class LoginCheckFilter implements Filter {
 //        allow uri
         String[] uris = new String[]{
 //                登录登出
+                "/static/index.html",
                 "/",
                 "/employee/login",
 //                静态资源
