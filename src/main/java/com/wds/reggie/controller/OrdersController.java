@@ -49,6 +49,7 @@ public class OrdersController {
         Page<Orders> ordersPage = new Page<>(page, pageSize);
         LambdaQueryWrapper<Orders> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.eq(Orders::getUserId, BaseContext.getCurrentId());
+        queryWrapper.orderByDesc(Orders::getOrderTime);
         ordersService.page(ordersPage, queryWrapper);
 
         return R.success(ordersPage);
