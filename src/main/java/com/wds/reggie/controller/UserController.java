@@ -44,7 +44,8 @@ public class UserController {
             userService.save(newUser);
             dbUser = newUser;
         }
-        request.getSession().setAttribute("userId", dbUser.getId());
+        Long id = dbUser.getId();
+        request.getSession().setAttribute("userId",id);
 
         log.info("User login phone:{}", user.getPhone());
 

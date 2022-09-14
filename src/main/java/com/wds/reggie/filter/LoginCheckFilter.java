@@ -78,7 +78,6 @@ public class LoginCheckFilter implements Filter {
             BaseContext.setCurrentId((Long) request.getSession().getAttribute("userId"));
             filterChain.doFilter(servletRequest, servletResponse);
             return;
-
         }
         ObjectMapper mapper = new ObjectMapper();
         response.getWriter().write(mapper.writeValueAsString(R.error("NOTLOGIN")));
