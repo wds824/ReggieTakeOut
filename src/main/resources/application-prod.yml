@@ -7,6 +7,15 @@ spring:
     url: jdbc:mysql://localhost:3306/reggie?useSSL=false
     username: root
     password: 123456
+  redis:
+    host: localhost
+    port: 6379
+    database: 0
+  cache:
+    redis:
+#      大约 3小时
+      time-to-live: 10000000
+
 mybatis-plus:
   global-config:
     db-config:
