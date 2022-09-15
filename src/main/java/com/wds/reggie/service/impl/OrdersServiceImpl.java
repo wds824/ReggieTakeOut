@@ -3,7 +3,8 @@ package com.wds.reggie.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.IdWorker;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.wds.reggie.common.BaseContext;
+import com.wds.reggie.common.R;
+import com.wds.reggie.common.utils.BaseContext;
 import com.wds.reggie.dto.OrdersDto;
 import com.wds.reggie.entity.*;
 import com.wds.reggie.exception.CustomException;
@@ -42,7 +43,7 @@ public class OrdersServiceImpl extends ServiceImpl<OrdersMapper, Orders> impleme
      */
     @Override
     public void submit(Orders order) {
-        Long userId = BaseContext.getCurrentId();
+        Long userId = BaseContext.getCurrentId().getUserId();
         // 查购物车
         LambdaQueryWrapper<ShoppingCart> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.eq(ShoppingCart::getUserId, userId);
@@ -92,8 +93,7 @@ public class OrdersServiceImpl extends ServiceImpl<OrdersMapper, Orders> impleme
             dto.setUserName(user.getName());
             dto.setPhone(user.getPhone());
         }else {
-            dto.setUserName("user");
-            dto.setPhone("13812345678");
+            R.error("登录信息失效，请退出并重新登录");
         }
         dto.setConsignee(addressBook.getConsignee());
         dto.setAddressBookId(addressBook.getId());

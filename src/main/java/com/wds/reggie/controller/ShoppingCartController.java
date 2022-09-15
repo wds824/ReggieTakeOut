@@ -2,8 +2,9 @@ package com.wds.reggie.controller;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
-import com.wds.reggie.common.BaseContext;
+import com.wds.reggie.common.utils.BaseContext;
 import com.wds.reggie.common.R;
+import com.wds.reggie.common.utils.CurrentUser;
 import com.wds.reggie.entity.ShoppingCart;
 import com.wds.reggie.service.ShoppingCartService;
 import lombok.extern.slf4j.Slf4j;
@@ -29,8 +30,8 @@ public class ShoppingCartController {
     @PostMapping("/add")
     public R<String> save(@RequestBody ShoppingCart cart) {
 
-        // set userid
-        Long id = BaseContext.getCurrentId();
+        CurrentUser currentId = BaseContext.getCurrentId();
+        Long id =currentId.getUserId();
         log.info("user:{} add dish to cart", id);
 
         cart.setUserId(id);
@@ -80,7 +81,7 @@ public class ShoppingCartController {
     @GetMapping("/list")
     public R<List<ShoppingCart>> list() {
 //        当前登录用户的ID
-        Long userId = BaseContext.getCurrentId();
+        Long userId = BaseContext.getCurrentId().getUserId();
         log.info("user:{} show shopping cart", userId);
 
         LambdaQueryWrapper<ShoppingCart> queryWrapper = new LambdaQueryWrapper<>();
@@ -97,7 +98,7 @@ public class ShoppingCartController {
      */
     @DeleteMapping("/clean")
     public R<String> clean() {
-        Long id = BaseContext.getCurrentId();
+        Long id = BaseContext.getCurrentId().getUserId();
         log.info("user:{} clean shopping cart", id);
 
         LambdaQueryWrapper<ShoppingCart> queryWrapper = new LambdaQueryWrapper<>();

@@ -1,8 +1,8 @@
 package com.wds.reggie.filter;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.wds.reggie.common.BaseContext;
 import com.wds.reggie.common.R;
+import com.wds.reggie.common.utils.BaseContext;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.util.AntPathMatcher;
 
@@ -59,7 +59,6 @@ public class LoginCheckFilter implements Filter {
         };
 
 
-
         boolean matcher = check(uris, ruri);
 
         if (matcher) {
@@ -67,16 +66,16 @@ public class LoginCheckFilter implements Filter {
             return;
         }
 
-        if ((request.getSession().getAttribute("employeeId")) != null) {
-            /*存储当前登录用户的id*/
-            BaseContext.setCurrentId((Long) request.getSession().getAttribute("employeeId"));
-            filterChain.doFilter(servletRequest, servletResponse);
-            return;
+        /*存储当前登录员工的id*/
+        Long employeeId = (Long) request.getSession().getAttribute("employeeId");
+        BaseContext.getCurrentId().setEmployeeId(employeeId);
 
-        }
-        if ((request.getSession().getAttribute("userId")) != null) {
-            /*存储当前登录用户的id*/
-            BaseContext.setCurrentId((Long) request.getSession().getAttribute("userId"));
+        /*存储当前登录用户的id*/
+        Long userId = (Long) request.getSession().getAttribute("userId");
+        BaseContext.getCurrentId().setUserId(userId);
+
+
+        if (BaseContext.getCurrentId().getUserId() != null || BaseContext.getCurrentId().getEmployeeId() != null) {
             filterChain.doFilter(servletRequest, servletResponse);
             return;
         }

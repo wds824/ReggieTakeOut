@@ -3,7 +3,7 @@ package com.wds.reggie.controller;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.wds.reggie.common.BaseContext;
+import com.wds.reggie.common.utils.BaseContext;
 import com.wds.reggie.common.R;
 import com.wds.reggie.entity.Orders;
 import com.wds.reggie.exception.CustomException;
@@ -48,7 +48,7 @@ public class OrdersController {
     public R<Page<Orders>> userPage(int page, int pageSize) {
         Page<Orders> ordersPage = new Page<>(page, pageSize);
         LambdaQueryWrapper<Orders> queryWrapper = new LambdaQueryWrapper<>();
-        queryWrapper.eq(Orders::getUserId, BaseContext.getCurrentId());
+        queryWrapper.eq(Orders::getUserId, BaseContext.getCurrentId().getUserId());
         queryWrapper.orderByDesc(Orders::getOrderTime);
         ordersService.page(ordersPage, queryWrapper);
 
@@ -95,5 +95,10 @@ public class OrdersController {
         updateWrapper.eq(Orders::getId, orders.getId());
         ordersService.update(updateWrapper);
         return R.success("修改成功！");
+    }
+
+    @PostMapping("/again")
+    public R<String> again (){
+        return R.error("Sorry, I didn't write the code for it.");
     }
 }

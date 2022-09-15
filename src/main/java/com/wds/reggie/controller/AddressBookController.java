@@ -2,7 +2,7 @@ package com.wds.reggie.controller;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
-import com.wds.reggie.common.BaseContext;
+import com.wds.reggie.common.utils.BaseContext;
 import com.wds.reggie.common.R;
 import com.wds.reggie.entity.AddressBook;
 import com.wds.reggie.service.AddressBookService;
@@ -27,7 +27,7 @@ public class AddressBookController {
 
     @PostMapping
     public R<String> save(@RequestBody AddressBook addressBook) {
-        Long id = BaseContext.getCurrentId();
+        Long id = BaseContext.getCurrentId().getUserId();
         addressBook.setUserId(id);
         addressBookService.save(addressBook);
         return R.success("添加成功!");
@@ -39,7 +39,7 @@ public class AddressBookController {
     @GetMapping("/list")
     public R<List<AddressBook>> list() {
         LambdaQueryWrapper<AddressBook> queryWrapper = new LambdaQueryWrapper<>();
-        queryWrapper.eq(AddressBook::getUserId, BaseContext.getCurrentId());
+        queryWrapper.eq(AddressBook::getUserId, BaseContext.getCurrentId().getUserId());
         List<AddressBook> list = addressBookService.list(queryWrapper);
         return R.success(list);
     }
