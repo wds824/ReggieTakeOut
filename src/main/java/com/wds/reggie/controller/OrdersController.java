@@ -27,6 +27,7 @@ import java.time.format.DateTimeFormatter;
 @Slf4j
 @RequestMapping("/order")
 public class OrdersController {
+
     @Autowired
     private UserService userService;
     @Autowired
@@ -65,7 +66,6 @@ public class OrdersController {
     @GetMapping("page")
     public R<Page<Orders>> ordersPage(int page, int pageSize,
                                       Long number, String beginTime, String endTime) {
-
 
         Page<Orders> page1 = new Page<>(page, pageSize);
         // condition
