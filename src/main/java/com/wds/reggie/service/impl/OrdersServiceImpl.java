@@ -88,9 +88,14 @@ public class OrdersServiceImpl extends ServiceImpl<OrdersMapper, Orders> impleme
         dto.setUserId(userId);
         dto.setAmount(new BigDecimal(amount.get()));
         dto.setNumber(String.valueOf(orderID));
-        dto.setUserName(user.getName());
+        if (user!= null) {
+            dto.setUserName(user.getName());
+            dto.setPhone(user.getPhone());
+        }else {
+            dto.setUserName("user");
+            dto.setPhone("13812345678");
+        }
         dto.setConsignee(addressBook.getConsignee());
-        dto.setPhone(user.getPhone());
         dto.setAddressBookId(addressBook.getId());
         dto.setAddress(addressBook.getDetail());
 
