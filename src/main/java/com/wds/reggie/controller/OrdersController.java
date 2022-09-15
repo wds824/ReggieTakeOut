@@ -80,7 +80,7 @@ public class OrdersController {
             queryWrapper.lt(Orders::getOrderTime, localEndTime);
 
         }
-
+        queryWrapper.orderByDesc(Orders::getOrderTime);
         Page<Orders> ordersPage = ordersService.page(page1, queryWrapper);
         return R.success(ordersPage);
     }
