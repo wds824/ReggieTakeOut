@@ -3,6 +3,7 @@ package com.wds.reggie.mapper;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.wds.reggie.entity.AddressBook;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Select;
 
 /**
  * @author WDs , wds8.24@outlook.com
